@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">
+        VideoChat
+    </string>
+    <string name="login_button_text">
+        Login
+    </string>
+    <string name="register_button_text">
+        Register
+    </string>
+    <string name="login_text_field_userName">
+        Enter UserName
+    </string>
+    <string name="register_text_field_userName">
+        Enter UserName
+    </string>
+    <string name="login_text_field_email">
+        Enter Email
+    </string>
+    <string name="register_text_field_email">
+        Enter Email
+    </string>
+    <string name="login_text_field_password">
+        Enter Password
+    </string>
+    <string name="register_text_field_password">
+        Enter Password
+    </string>
+    <string name="text_register_prompt">
+        Sign Up
+    </string>
+    <string name="back_login_prompt">
+        Back to login
+    </string>
+    <string name="checkbox_remember_me">
+        Remember me next time
+    </string>
+    <string name="agora_app_id">
+        7aade0b2e00e44cfbe79e63f9b57f9c6
+    </string>
+    <string name="agora_app_certificate">
+        4d4d4eeee2484992be90b3947b26e251
+    </string>
+    <string name="chat_client">
+        tempclient1
+    </string>
+    <string name="chat_client_token">
+       007eJxTYPgRysVidetA4YpkGWfGXduTbYXOPX9aV3nzSnX95TkFLU8VGMwTE1NSDZKMUg0MUk1MktOSUs0tU82M0yyTTM3TLJPNVCyvpjUEMjIczjvNyMjAysAIhCC+CoN5qkVysrmRga6ZRYqZrqFhappuUqppsm6yqYUJUNgoydTAGAAYvCkj
+    </string>
+    <string name="chat_app_key">
+        411202249#1390251
+    </string>
+</resources>
