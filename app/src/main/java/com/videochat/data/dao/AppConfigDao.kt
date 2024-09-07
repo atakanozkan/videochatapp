@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.videochat.domain.entity.config.AppConfigEntity
+import com.videochat.domain.entity.AppConfigEntity
 
 @Dao
 interface AppConfigDao {

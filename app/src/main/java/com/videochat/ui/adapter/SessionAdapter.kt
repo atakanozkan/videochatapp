@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.videochat.R
-import com.videochat.domain.model.session.SessionModel
+import com.videochat.presentation.model.SessionPresentationModel
 
-class SessionAdapter(private var sessions: List<SessionModel>) : RecyclerView.Adapter<SessionAdapter.SessionViewHolder>() {
+class SessionAdapter(private var sessions: List<SessionPresentationModel>) : RecyclerView.Adapter<SessionAdapter.SessionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SessionViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.session_item, parent, false)
@@ -30,7 +30,7 @@ class SessionAdapter(private var sessions: List<SessionModel>) : RecyclerView.Ad
         private val tvDate: TextView = itemView.findViewById(R.id.tvDate)
 
         @SuppressLint("SetTextI18n")
-        fun bind(session: SessionModel) {
+        fun bind(session: SessionPresentationModel) {
             tvCallerId.text = "Host Id : "+session.callerId
             tvReceiverId.text ="Attendee Id: " + session.receiverId
             tvDuration.text ="Duration : " + session.duration.toString() + " seconds"
