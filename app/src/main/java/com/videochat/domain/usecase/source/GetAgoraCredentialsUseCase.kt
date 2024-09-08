@@ -2,6 +2,7 @@ package com.videochat.domain.usecase.source
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.common.extension.toDomainModel
 import com.videochat.domain.entity.AgoraConfigEntity
 import com.videochat.domain.model.AgoraConfigDomainModel
@@ -10,7 +11,7 @@ import javax.inject.Inject
 
 class GetAgoraCredentialsUseCase  @Inject constructor(
     private val fStore: FirebaseFirestore
-) {
+): UseCase {
     suspend fun execute():  AgoraConfigDomainModel? {
         return try {
             val querySnapshot = fStore.collection("config").limit(1).get().await()

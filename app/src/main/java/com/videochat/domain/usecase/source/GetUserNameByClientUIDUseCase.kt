@@ -2,13 +2,14 @@ package com.videochat.domain.usecase.source
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.domain.entity.FirestoreUserEntity
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class GetUserNameByClientUIDUseCase  @Inject constructor(
     private val fStore: FirebaseFirestore
-) {
+) : UseCase {
     suspend fun execute(uid: Int): String {
         try {
             val querySnapshot = fStore.collection("users")

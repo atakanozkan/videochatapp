@@ -10,7 +10,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    //private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             super.onCreate(savedInstanceState)
@@ -19,7 +18,5 @@ class MainActivity : AppCompatActivity() {
             Log.e(TAG, "onCreateView", e);
             throw e;
         }
-        //val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_graph) as NavHostFragment
-        //navController = navHostFragment.navController
     }
 }

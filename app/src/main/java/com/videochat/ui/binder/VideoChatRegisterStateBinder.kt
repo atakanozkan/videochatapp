@@ -21,6 +21,7 @@ class VideoChatRegisterStateBinder(
             is UiState.Loading ->{
                 progressBar.visibility = View.VISIBLE
                 btnRegister.visibility = View.GONE
+                btnBackLogin.visibility = View.GONE
                 fragmentEvent.onLoadingEvent()
             }
             is UiState.Success -> {
@@ -30,6 +31,7 @@ class VideoChatRegisterStateBinder(
             is UiState.Error -> {
                 progressBar.visibility = View.GONE
                 btnRegister.visibility = View.VISIBLE
+                btnBackLogin.visibility = View.VISIBLE
                 fragmentEvent.onErrorEvent()
             }
             UiState.NoChange -> Unit

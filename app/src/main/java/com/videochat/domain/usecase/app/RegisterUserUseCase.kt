@@ -1,6 +1,7 @@
 package com.videochat.domain.usecase.app
 
 import com.google.firebase.auth.FirebaseAuth
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.common.extension.HashPassword
 import com.videochat.common.extension.UniqueIdGenerator.generateUniqueId
 import com.videochat.data.source.FirestoreSource
@@ -10,7 +11,7 @@ import javax.inject.Inject
 class RegisterUserUseCase @Inject constructor(
     private val fAuth: FirebaseAuth,
     private val fSource: FirestoreSource
-) {
+): UseCase {
     suspend fun execute(email: String, username: String, password: String): Result<String> {
         return try {
             if (!validateUsername(username) || !validatePassword(password)) {

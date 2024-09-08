@@ -2,6 +2,7 @@ package com.videochat.domain.usecase.source
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.common.extension.toUserEntity
 import com.videochat.domain.entity.FirestoreUserEntity
 import com.videochat.domain.entity.UserEntity
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 class GetUserCredentialsUseCase  @Inject constructor(
     private val fStore: FirebaseFirestore
-) {
+) : UseCase {
     fun execute(userId: String): Flow<UserEntity?> = flow {
         try {
             val docSnapshot = fStore.collection("users").document(userId).get().await()

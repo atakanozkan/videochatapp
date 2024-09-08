@@ -2,6 +2,7 @@ package com.videochat.domain.usecase.source
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.common.extension.toDomainModel
 import com.videochat.domain.entity.SessionEntity
 import com.videochat.domain.model.SessionDomainModel
@@ -10,7 +11,7 @@ import javax.inject.Inject
 
 class GetSessionsByUserUIDUseCase  @Inject constructor(
     private val fStore: FirebaseFirestore
-) {
+): UseCase {
     suspend fun execute(uid: String): List<SessionDomainModel> {
         return try {
             val callerQuerySnapshot = fStore.collection("sessions")

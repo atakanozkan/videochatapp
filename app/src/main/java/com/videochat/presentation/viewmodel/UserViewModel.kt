@@ -1,5 +1,6 @@
 package com.videochat.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,10 +17,12 @@ import com.videochat.presentation.model.SessionPresentationModel
 import com.videochat.presentation.model.UiState
 import com.videochat.presentation.model.UserPresentationModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,8 +35,8 @@ open class UserViewModel @Inject constructor(
     private val getSessionsByUserUIDUseCase: GetSessionsByUserUIDUseCase
 ) : BaseViewModel<UiState>(UiState.NoChange) {
 
-    private val _userModel = MutableLiveData<UserPresentationModel?>()
-    val userModel: MutableLiveData<UserPresentationModel?> get() = _userModel
+    private val _userModel = MutableStateFlow<UserPresentationModel?>(null)
+    val userModel: StateFlow<UserPresentationModel?> = _userModel.asStateFlow()
 
     private val _sessionHistory = MutableLiveData<List<SessionPresentationModel>>()
     val sessionhistory: LiveData<List<SessionPresentationModel>> get() = _sessionHistory
@@ -44,26 +47,29 @@ open class UserViewModel @Inject constructor(
     private val _isUserSavedToCache = MutableStateFlow(false)
     val isUserSavedToCache: StateFlow<Boolean> = _isUserSavedToCache.asStateFlow()
 
-    fun saveUserToCache(userId: String, userName: String, email: String, password: String, salt: ByteArray, clientUID: Int) {
-        viewModelScope.launch {
+    fun saveUserToCache(userId: String, userName: String, email: String, password: String, salt: ByteArray, clientUID: Int) = viewModelScope.launch(Dispatchers.IO) {
+        try {
             saveUserToCacheUseCase.execute(userId, userName, email, password, salt, clientUID)
-        }.invokeOnCompletion {
             _isUserSavedToCache.value = true
+        } catch (e: Exception) {
+            Log.e("saveUserToCache", "Failed to save user to cache", e)
+            _isUserSavedToCache.value = false
         }
     }
 
-    fun loadUserCredentials(userId: String) {
-        viewModelScope.launch {
-            getUserCredentialsUseCase.execute(userId).collect { userEntity ->
-                _userCredentials.value = userEntity
-            }
+    fun loadUserCredentials(userId: String) = viewModelScope.launch {
+        getUserCredentialsUseCase.execute(userId).collect { userEntity ->
+            _userCredentials.value = userEntity
         }
     }
 
     fun updateFromCache() = viewModelScope.launch {
             val model = updateUserFromCacheUseCase.execute()
             model?.let {
-                _userModel.postValue(it)
+                withContext(Dispatchers.Main){
+                    _userModel.value= it
+                }
+
                 updateSessionHistory(model.clientUID)
             }
     }
@@ -73,30 +79,36 @@ open class UserViewModel @Inject constructor(
                 item->
                     item.toPresentationModel()
             }.toList()
-            _sessionHistory.postValue(sessions)
+            withContext(Dispatchers.Main){
+                _sessionHistory.value= sessions
+            }
         }
     }
-    fun clearUserFromCache() {
-        viewModelScope.launch {
-            clearUserCacheUseCase.execute()
-        }
+    fun clearUserFromCache() = viewModelScope.launch(Dispatchers.IO){
+        clearUserCacheUseCase.execute()
     }
 
     fun logoutUser() {
         viewModelScope.launch {
             logoutUserUseCase.execute()
-            _userModel.postValue(null)
+            _userModel.value = null
             _userCredentials.value = null
             _isUserSavedToCache.value = false
         }
     }
 
+    fun createUserModel(userId: String,userEmail: String,userName: String,clientUID: Int): UserPresentationModel{
+        val model = UserPresentationModel(userId,userEmail,userName,clientUID)
+        _userModel.value = model
+        updateSessionHistory(model.clientUID)
+        return model
+    }
+
     fun getCurrentUserUID(): Int{
-        if(_userModel.value == null){
-            return 0
-        }
-        else{
-            return _userModel.value!!.clientUID
+        return if(_userModel.value == null){
+            0
+        } else{
+            _userModel.value!!.clientUID
         }
     }
 }

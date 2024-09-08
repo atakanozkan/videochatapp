@@ -49,6 +49,10 @@ class VideoChatRegisterFragment : BaseFragment<UiState,VideoChatRegisterFragment
     }
 
     override fun View.bindViews() {
+        setupViews()
+    }
+
+    override fun setupViews(){
         setupRegisterButtons()
     }
 

@@ -12,5 +12,6 @@ interface VideoChatMainViewsProvider : ViewsProvider {
     val btnAddCall: ImageButton
     val tvNoCalls: TextView
     val rvCallHistory: RecyclerView
+    val tvUserRetrieveMessage: TextView
     val progressBar: ProgressBar
 }

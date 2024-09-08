@@ -11,6 +11,8 @@ import com.videochat.presentation.model.SessionPresentationModel
 
 class SessionAdapter(private var sessions: List<SessionPresentationModel>) : RecyclerView.Adapter<SessionAdapter.SessionViewHolder>() {
 
+    constructor() : this(emptyList())
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SessionViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.session_item, parent, false)
         return SessionViewHolder(view)

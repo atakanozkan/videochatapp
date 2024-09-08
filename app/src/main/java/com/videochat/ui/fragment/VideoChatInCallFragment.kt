@@ -128,7 +128,7 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
         }
     }
 
-    private fun setupViews() {
+    override fun setupViews() {
         var channelName = arguments?.getString("channelName")
         if (channelName != null) {
             viewModel.setChannelName(channelName)

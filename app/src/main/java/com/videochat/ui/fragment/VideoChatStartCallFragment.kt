@@ -58,7 +58,7 @@ class VideoChatStartCallFragment : BaseFragment<UiState,VideoChatStartCallFragme
         return binding
     }
 
-    private fun setupViews() {
+    override fun setupViews() {
         binding.startCallButtonStartCall.setOnClickListener {
             val channelName = binding.roomNameEditFieldStartCall.text.toString()
             if (channelName.isNotBlank()) {

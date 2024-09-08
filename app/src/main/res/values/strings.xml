@@ -8,6 +8,9 @@
     <string name="register_button_text">
         Register
     </string>
+    <string name="user_retrieve_text">
+        Retrieving user data…
+    </string>
     <string name="login_text_field_userName">
         Enter UserName
     </string>

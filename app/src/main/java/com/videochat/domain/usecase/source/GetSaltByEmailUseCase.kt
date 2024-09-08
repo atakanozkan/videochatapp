@@ -2,6 +2,7 @@ package com.videochat.domain.usecase.source
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.common.extension.fromBase64String
 import com.videochat.domain.entity.FirestoreUserEntity
 import kotlinx.coroutines.tasks.await
@@ -9,7 +10,7 @@ import javax.inject.Inject
 
 class GetSaltByEmailUseCase  @Inject constructor(
     private val fStore: FirebaseFirestore
-) {
+): UseCase {
 
     suspend fun execute(email: String): ByteArray? {
         try {

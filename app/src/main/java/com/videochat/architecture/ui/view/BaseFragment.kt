@@ -60,6 +60,8 @@ abstract class BaseFragment<VIEW_STATE : Any,BINDING : ViewBinding> :
 
     abstract fun View.bindViews()
 
+    abstract fun setupViews()
+
     private fun observeViewModel() {
         uiStateJob = performOnStartedLifecycleEvent {
             viewModel.uiState.collect(::applyViewState)

@@ -1,6 +1,7 @@
 package com.videochat.domain.usecase.app
 
 import com.google.firebase.auth.FirebaseAuth
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.data.source.FirestoreSource
 import com.videochat.domain.model.AuthenticationState
 import kotlinx.coroutines.flow.firstOrNull
@@ -11,7 +12,7 @@ class AutoAuthenticateUseCase @Inject constructor(
     private val fAuth: FirebaseAuth,
     private val fSource: FirestoreSource,
     private val getUserFromCacheUseCase: GetUserFromCacheUseCase
-) {
+) : UseCase {
 
     suspend fun execute(): AuthenticationState {
         return try {

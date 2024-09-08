@@ -1,12 +1,13 @@
 package com.videochat.domain.usecase.app
 
+import com.videochat.architecture.domain.usecase.UseCase
 import com.videochat.presentation.model.UserPresentationModel
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class UpdateUserFromCacheUseCase  @Inject constructor(
     private val getUserFromCacheUseCase: GetUserFromCacheUseCase
-){
+): UseCase {
     suspend fun execute(): UserPresentationModel? {
         val cachedUser = getUserFromCacheUseCase.execute().firstOrNull()
         return cachedUser?.let {

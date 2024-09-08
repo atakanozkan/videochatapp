@@ -4,8 +4,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.firebase.auth.FirebaseAuth
 import com.videochat.R
 import com.videochat.architecture.ui.view.BaseFragment
@@ -52,7 +54,6 @@ class VideoChatLoginFragment : BaseFragment<UiState,VideoChatLoginFragmentBindin
     private var fragmentEventListener: FragmentEventListener = object : FragmentEventListener {
         override fun onSuccessEvent() {
             Log.d("FragmentEventListener", "Success event triggered")
-            showToast("Login is successful!")
             navigate(RouteDestination.Home)
         }
 
@@ -62,17 +63,21 @@ class VideoChatLoginFragment : BaseFragment<UiState,VideoChatLoginFragmentBindin
 
         override fun onErrorEvent() {
             Log.d("FragmentEventListener", "Error event triggered")
-            showToast("Login is failed!")
         }
     }
 
     override lateinit var viewStateBinder: VideoChatLoginStateBinder
 
     override fun View.bindViews() {
+        setupViews()
+    }
+
+    override fun setupViews() {
+        observeViewModel()
         setupLoginButtons()
         appConfigViewModel.loadRememberMe()
-        observeViewModel()
     }
+
     override fun initializeBinding(inflater: LayoutInflater, container: ViewGroup?): VideoChatLoginFragmentBinding {
         val binding = VideoChatLoginFragmentBinding.inflate(inflater, container, false)
         viewHolder = VideoChatLoginViewHolder(binding.root)
@@ -113,6 +118,7 @@ class VideoChatLoginFragment : BaseFragment<UiState,VideoChatLoginFragmentBindin
                     }
                     AuthenticationState.Unauthenticated, AuthenticationState.Failed -> render(UiState.Error(""))
                     AuthenticationState.Authenticating -> render(UiState.Loading)
+                    null -> render(UiState.Error(""))
                 }
             })
             viewModel.authenticateUser(email, password)
@@ -144,7 +150,11 @@ class VideoChatLoginFragment : BaseFragment<UiState,VideoChatLoginFragmentBindin
                     appConfigViewModel.setRememberMe(false)
                 }
 
-                userViewModel.clearUserFromCache()
+                val clearJob = launch {
+                        userViewModel.clearUserFromCache()
+                }
+
+                clearJob.join()
                 val saveJob = launch {
                     userViewModel.saveUserToCache(
                         userEntity.userId,
@@ -155,13 +165,14 @@ class VideoChatLoginFragment : BaseFragment<UiState,VideoChatLoginFragmentBindin
                         userEntity.clientUID
                     )
                 }
-
                 saveJob.join()
-                userViewModel.isUserSavedToCache.collect { isSaved ->
-                    if (isSaved) {
-                        render(UiState.Success)
-                    } else {
-                        render(UiState.Error("Failed to save user to cache"))
+                repeatOnLifecycle(Lifecycle.State.RESUMED){
+                    userViewModel.isUserSavedToCache.collect { isSaved ->
+                        if (isSaved) {
+                            render(UiState.Success)
+                        } else {
+                            render(UiState.Error("Failed to save user to cache"))
+                        }
                     }
                 }
             } catch (e: Exception) {
