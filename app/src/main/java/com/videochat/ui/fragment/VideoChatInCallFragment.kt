@@ -39,13 +39,18 @@ import io.agora.chat.TextMessageBody
 import io.agora.rtc2.IRtcEngineEventHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBinding>(R.layout.video_chat_in_call_fragment) {
@@ -71,6 +76,7 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
 
     private val activityMainScope = CoroutineScope(SupervisorJob())
     private var timeExpirePerform = 4800
+    private var timeoutToSetAgoraCredentials = 5000
     private var opponentUserName: String? = null
     private var callStartTime: Long = 0
     private var callEndTime: Long = 0
@@ -86,6 +92,7 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
 
         override fun onErrorEvent() {
             Log.d("FragmentEventListener", "Error event triggered")
+            cancelCall()
         }
     }
 
@@ -137,6 +144,7 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
         }
     }
 
+    @OptIn(FlowPreview::class)
     override fun setupViews() {
         val channelName = arguments?.getString("channelName")
         if (channelName != null) {
@@ -144,11 +152,23 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
         }
 
         lifecycleScope.launch {
+            render(UiState.Loading)
             appConfigViewModel.getAgoraCredentials()
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 appConfigViewModel.agoraCredentials
                     .filterNotNull()
                     .take(1)
+                    .timeout(timeoutToSetAgoraCredentials.milliseconds)
+                    .catch {
+                        throwable ->
+                            if(throwable is CancellationException){
+                                Log.d("VideoChatInCallFragment", "Connection Timeout!")
+                            }
+                            else{
+                                throwable.message?.let { Log.d("VideoChatInCallFragment", it) }
+                            }
+                            render(UiState.Error("Call canceled!"))
+                    }
                     .collect { credential ->
                         Log.d("VideoChatInCallFragment", credential.toString())
                         userViewModel.updateFromCache()
@@ -205,11 +225,15 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
                                 editMessage = binding.etChatMessageInCall
                             )
                         }
+
+                        render(UiState.Success)
                     }
             }
         }
-
         binding.btnQuitInCall.setOnClickListener {
+            cancelCall()
+        }
+        setupBackAction{
             cancelCall()
         }
     }
@@ -321,5 +345,9 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
         viewModel.leaveChannel()
         viewModel.destroy()
         navigate(RouteDestination.Home)
+    }
+
+    private fun render(uiState: UiState) {
+        applyViewState(uiState)
     }
 }

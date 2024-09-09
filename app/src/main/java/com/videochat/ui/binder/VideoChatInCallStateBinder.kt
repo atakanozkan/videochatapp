@@ -1,6 +1,5 @@
 package com.videochat.ui.binder
 
-import android.view.View
 import androidx.core.view.isVisible
 import com.videochat.architecture.ui.binder.ViewStateBinder
 import com.videochat.architecture.ui.binder.ViewsProvider
@@ -22,10 +21,12 @@ class VideoChatInCallStateBinder(
         when (viewState) {
             is UiState.Loading -> {
                 progressBar.isVisible = true
+                scrollView.isVisible = false
                 fragmentEvent.onLoadingEvent()
             }
             is UiState.Success -> {
-                progressBar.visibility = View.GONE
+                progressBar.isVisible = false
+                scrollView.isVisible = true
                 fragmentEvent.onSuccessEvent()
             }
             is UiState.Error -> {
@@ -36,5 +37,4 @@ class VideoChatInCallStateBinder(
             UiState.NoChange -> Unit
         }
     }
-
 }

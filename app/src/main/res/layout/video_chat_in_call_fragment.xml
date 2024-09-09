@@ -50,8 +50,12 @@
     <ProgressBar
         android:id="@+id/progressBar_in_call"
         android:layout_width="wrap_content"
+        android:foregroundGravity="center"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/remoteVideoChatView_in_call"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="MissingConstraints" />
 
     <ScrollView
@@ -61,7 +65,7 @@
         android:layout_marginTop="180dp"
         app:layout_constraintTop_toBottomOf="@id/remoteVideoChatView_in_call"
         app:layout_constraintBottom_toTopOf="@id/chatContainer_in_call"
-        android:background="#CC000000">
+        android:background="#00FFFFFF">
 
         <LinearLayout
             android:id="@+id/messageList_in_call"

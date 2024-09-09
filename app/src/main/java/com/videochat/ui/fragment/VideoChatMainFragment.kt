@@ -83,6 +83,7 @@ class VideoChatMainFragment : BaseFragment<UiState,VideoChatMainFragmentBinding>
         setupSessionHistoryObserver()
         setupButtonListeners()
         setupUserMain()
+        setupBackAction{}
     }
 
     private fun setupRecyclerView() {
@@ -98,9 +99,10 @@ class VideoChatMainFragment : BaseFragment<UiState,VideoChatMainFragmentBinding>
                 binding.tvNoCallsMain.visibility = View.VISIBLE
                 binding.rvCallHistoryMain.visibility = View.GONE
             } else {
+                val sortedSessions = sessions.sortedByDescending { it.date }
                 binding.tvNoCallsMain.visibility = View.GONE
                 binding.rvCallHistoryMain.visibility = View.VISIBLE
-                binding.rvCallHistoryMain.adapter = SessionAdapter(sessions)
+                binding.rvCallHistoryMain.adapter = SessionAdapter(sortedSessions)
             }
         }
     }
