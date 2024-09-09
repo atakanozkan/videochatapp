@@ -3,7 +3,6 @@ package com.videochat.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.videochat.data.source.FirestoreSource
-import com.videochat.domain.usecase.source.GetAgoraCredentialsUseCase
 import com.videochat.domain.usecase.source.GetLoginCredentialsUseCase
 import com.videochat.domain.usecase.source.GetSaltByEmailUseCase
 import com.videochat.domain.usecase.source.GetSessionsByUserUIDUseCase
@@ -37,7 +36,6 @@ object FirebaseModule {
         getSaltByEmailUseCase: GetSaltByEmailUseCase,
         getUserNameByClientUIDUseCase: GetUserNameByClientUIDUseCase,
         getUserCredentialsUseCase: GetUserCredentialsUseCase,
-        getAgoraCredentialsUseCase: GetAgoraCredentialsUseCase,
         insertSessionUseCase: InsertSessionUseCase,
         getSessionsByUserUIDUseCase: GetSessionsByUserUIDUseCase
     ): FirestoreSource = FirestoreSource(
@@ -46,7 +44,6 @@ object FirebaseModule {
             getSaltByEmailUseCase,
             getUserNameByClientUIDUseCase,
             getUserCredentialsUseCase,
-            getAgoraCredentialsUseCase,
             insertSessionUseCase,
             getSessionsByUserUIDUseCase)
 }

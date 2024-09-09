@@ -3,9 +3,7 @@ package com.videochat.data.source
 import android.util.Log
 import com.videochat.domain.entity.SessionEntity
 import com.videochat.domain.entity.UserEntity
-import com.videochat.domain.model.AgoraConfigDomainModel
 import com.videochat.domain.model.SessionDomainModel
-import com.videochat.domain.usecase.source.GetAgoraCredentialsUseCase
 import com.videochat.domain.usecase.source.GetLoginCredentialsUseCase
 import com.videochat.domain.usecase.source.GetSaltByEmailUseCase
 import com.videochat.domain.usecase.source.GetSessionsByUserUIDUseCase
@@ -22,7 +20,6 @@ class FirestoreSource @Inject constructor(
     private val getSaltByEmailUseCase: GetSaltByEmailUseCase,
     private val getUserNameByClientUIDUseCase: GetUserNameByClientUIDUseCase,
     private val getUserCredentialsUseCase: GetUserCredentialsUseCase,
-    private val getAgoraCredentialsUseCase: GetAgoraCredentialsUseCase,
     private val insertSessionUseCase: InsertSessionUseCase,
     private val getSessionsByUserUIDUseCase: GetSessionsByUserUIDUseCase
 ) {
@@ -65,13 +62,7 @@ class FirestoreSource @Inject constructor(
     }
 
 
-    suspend fun getAgoraCredentials(): AgoraConfigDomainModel? {
-        return try {
-            getAgoraCredentialsUseCase.execute()
-        } catch (e: Exception) {
-            null
-        }
-    }
+
 
     suspend fun insertSession(session: SessionEntity): Boolean {
         return try {

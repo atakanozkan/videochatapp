@@ -16,13 +16,14 @@
             </Target>
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-09-08T15:04:25.642477Z" />
+          <multipleDevicesSelectedInDropDown value="true" />
           <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$PROJECT_DIR$/../.android/avd/Pixel_4_XL_API_30.avd" />
+                  <value value="$PROJECT_DIR$/../.android/avd/Pixel_8_Edited_API_30.avd" />
                 </Key>
               </deviceKey>
             </Target>
@@ -33,7 +34,7 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$PROJECT_DIR$/../.android/avd/Pixel_3a_API_30_x86.avd" />
+                  <value value="$PROJECT_DIR$/../.android/avd/Pixel_4_XL_API_30.avd" />
                 </Key>
               </deviceKey>
             </Target>
@@ -42,7 +43,7 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$PROJECT_DIR$/../.android/avd/Pixel_4_XL_API_30.avd" />
+                  <value value="$PROJECT_DIR$/../.android/avd/Pixel_8_Edited_API_30.avd" />
                 </Key>
               </deviceKey>
             </Target>

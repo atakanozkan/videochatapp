@@ -12,6 +12,9 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.firebase.Timestamp
 import com.videochat.R
 import com.videochat.architecture.ui.view.BaseFragment
@@ -19,6 +22,7 @@ import com.videochat.data.source.FirestoreSource
 import com.videochat.databinding.VideoChatInCallFragmentBinding
 import com.videochat.domain.entity.SessionEntity
 import com.videochat.presentation.model.UiState
+import com.videochat.presentation.viewmodel.AppConfigViewModel
 import com.videochat.presentation.viewmodel.UserViewModel
 import com.videochat.presentation.viewmodel.VideoChatRoomViewModel
 import com.videochat.ui.binder.VideoChatInCallStateBinder
@@ -36,6 +40,8 @@ import io.agora.rtc2.IRtcEngineEventHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -52,6 +58,9 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
 
     @Inject
     lateinit var userViewModel: UserViewModel
+
+    @Inject
+    lateinit var appConfigViewModel: AppConfigViewModel
 
     @Inject
     override lateinit var destinationToUiMapper: RouteDestinationToUiMapper
@@ -129,56 +138,75 @@ class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBind
     }
 
     override fun setupViews() {
-        var channelName = arguments?.getString("channelName")
+        val channelName = arguments?.getString("channelName")
         if (channelName != null) {
             viewModel.setChannelName(channelName)
         }
 
-        userViewModel.updateFromCache()
-        viewModel.setAppCredentials(
-            agoraAppId = getString(R.string.agora_app_id),
-            agoraAppCertificate = getString(R.string.agora_app_certificate)
-        )
+        lifecycleScope.launch {
+            appConfigViewModel.getAgoraCredentials()
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                appConfigViewModel.agoraCredentials
+                    .filterNotNull()
+                    .take(1)
+                    .collect { credential ->
+                        Log.d("VideoChatInCallFragment", credential.toString())
+                        userViewModel.updateFromCache()
+                        viewModel.setAppCredentials(
+                            agoraAppId = credential.agoraAppId,
+                            agoraAppCertificate = credential.appCertificate
+                        )
 
-        val tokenBuilder = com.videochat.common.agora.media.RtcTokenBuilder2()
-        val stampValue = (System.currentTimeMillis() / 1000 + timeExpirePerform).toInt()
-        val uid = userViewModel.getCurrentUserUID()
-        val tokenResult = tokenBuilder.buildTokenWithUid(
-            viewModel.myAgoraAppId,
-            viewModel.appCertificate,
-            viewModel._channelName,
-            uid,
-            com.videochat.common.agora.media.RtcTokenBuilder2.Role.ROLE_PUBLISHER,
-            stampValue,
-            stampValue
-        )
-        viewModel.roomToken = tokenResult
+                        val tokenBuilder = com.videochat.common.agora.media.RtcTokenBuilder2()
+                        val stampValue =
+                            (System.currentTimeMillis() / 1000 + timeExpirePerform).toInt()
+                        val uid = userViewModel.getCurrentUserUID()
+                        val tokenResult = tokenBuilder.buildTokenWithUid(
+                            viewModel.myAgoraAppId,
+                            viewModel.appCertificate,
+                            viewModel._channelName,
+                            uid,
+                            com.videochat.common.agora.media.RtcTokenBuilder2.Role.ROLE_PUBLISHER,
+                            stampValue,
+                            stampValue
+                        )
+                        viewModel.roomToken = tokenResult
 
-        if (!viewModel.checkVideoPermissions(requireContext())) {
-            viewModel.requestVideoPermissions(requireActivity())
-        }
+                        if (!viewModel.checkVideoPermissions(requireContext())) {
+                            viewModel.requestVideoPermissions(requireActivity())
+                        }
 
-        viewModel.initAgoraEngine(requireContext(), rtcEventHandler) { isInitialized ->
-            if (isInitialized) {
-                viewModel.joinChannel(userViewModel.getCurrentUserUID(), requireContext(), binding)
-            } else {
-                Log.e("VideoChatInCallFragment", "Failed to initialize RTC engine")
+                        viewModel.initAgoraEngine(
+                            requireContext(),
+                            rtcEventHandler
+                        ) { isInitialized ->
+                            if (isInitialized) {
+                                viewModel.joinChannel(
+                                    userViewModel.getCurrentUserUID(),
+                                    requireContext(),
+                                    binding
+                                )
+                            } else {
+                                Log.e("VideoChatInCallFragment", "Failed to initialize RTC engine")
+                            }
+                        }
+
+                        viewModel.setupChatClient(requireContext(), credential.chatAppKey)
+                        setupListeners(requireContext(), binding.messageListInCall)
+                        viewModel.joinLeaveChat(credential.chatClient, credential.chatClientToken)
+
+                        binding.btnSendInCall.setOnClickListener {
+                            val messageContent = binding.etChatMessageInCall.text.toString().trim()
+                            sendMessage(
+                                context = requireContext(),
+                                view = binding.messageListInCall,
+                                toSendName = credential.chatClient,
+                                content = messageContent,
+                                editMessage = binding.etChatMessageInCall
+                            )
+                        }
+                    }
             }
-        }
-
-        viewModel.setupChatClient(requireContext(), getString(R.string.chat_app_key))
-        setupListeners(requireContext(), binding.messageListInCall)
-        viewModel.joinLeaveChat(getString(R.string.chat_client), getString(R.string.chat_client_token))
-
-        binding.btnSendInCall.setOnClickListener {
-            val messageContent = binding.etChatMessageInCall.text.toString().trim()
-            sendMessage(
-                context = requireContext(),
-                view = binding.messageListInCall,
-                toSendName = getString(R.string.chat_client),
-                content = messageContent,
-                editMessage = binding.etChatMessageInCall
-            )
         }
 
         binding.btnQuitInCall.setOnClickListener {
