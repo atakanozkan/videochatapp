@@ -7,7 +7,6 @@ plugins {
     id("androidx.navigation.safeargs")
     kotlin("plugin.serialization") version "2.0.20"
 }
-
 android {
     namespace = "com.videochat"
     compileSdk = 34

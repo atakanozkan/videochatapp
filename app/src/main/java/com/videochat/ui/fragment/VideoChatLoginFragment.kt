@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -34,12 +35,11 @@ import javax.inject.Inject
 class VideoChatLoginFragment : BaseFragment<UiState,VideoChatLoginFragmentBinding>(
     layoutResourceId = R.layout.video_chat_login_fragment,
 ) {
-    @Inject
-    lateinit var userViewModel: UserViewModel
-    @Inject
-    lateinit var  appConfigViewModel: AppConfigViewModel
-    @Inject
-    override lateinit var viewModel: VideoChatLoginViewModel
+    private val userViewModel: UserViewModel by viewModels()
+
+    private val  appConfigViewModel: AppConfigViewModel by viewModels()
+
+    override val viewModel: VideoChatLoginViewModel by viewModels()
 
     @Inject
     lateinit var fAuth: FirebaseAuth

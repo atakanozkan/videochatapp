@@ -38,4 +38,13 @@
     <string name="checkbox_remember_me">
         Remember me next time
     </string>
+    <string name="alert_dialog_ok">
+        OK
+    </string>
+    <string name="alert_dialog_quit_title">
+        Are you sure to quit?
+    </string>
+    <string name="alert_dialog_dismiss">
+        NO
+    </string>
 </resources>

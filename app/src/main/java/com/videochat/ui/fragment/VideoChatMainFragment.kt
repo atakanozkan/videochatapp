@@ -1,9 +1,11 @@
 package com.videochat.ui.fragment
 
+import android.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -37,11 +39,10 @@ import kotlin.time.Duration.Companion.milliseconds
 class VideoChatMainFragment : BaseFragment<UiState,VideoChatMainFragmentBinding>(
     layoutResourceId = R.layout.video_chat_main_fragment
 ) {
+    override val viewModel: UserViewModel by viewModels()
 
-    @Inject
-    override lateinit var viewModel: UserViewModel
-    @Inject
-    lateinit var appConfigViewModel: AppConfigViewModel
+    private val appConfigViewModel: AppConfigViewModel by viewModels()
+
     @Inject
     override lateinit var destinationToUiMapper: RouteDestinationToUiMapper
     @Inject
@@ -171,16 +172,25 @@ class VideoChatMainFragment : BaseFragment<UiState,VideoChatMainFragmentBinding>
         }
 
         binding.btnLogoutMain.setOnClickListener {
-            logoutUserSession()
+            showLogoutConfirmationDialog()
         }
     }
 
-    private fun logoutUserSession(){
+    private fun showLogoutConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.alert_dialog_quit_title))
+            .setNegativeButton(getString(R.string.alert_dialog_dismiss), null)
+            .setPositiveButton(getString(R.string.alert_dialog_ok)) { _, _ ->
+                logoutUserSession()
+            }
+            .show()
+    }
+
+    private fun logoutUserSession() {
         viewModel.logoutUser()
         appConfigViewModel.setRememberMe(false)
         navigate(RouteDestination.Login)
     }
-
     private fun render(uiState: UiState) {
         applyViewState(uiState)
     }

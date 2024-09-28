@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -55,14 +56,12 @@ import kotlin.time.Duration.Companion.milliseconds
 @AndroidEntryPoint
 class VideoChatInCallFragment : BaseFragment<UiState,VideoChatInCallFragmentBinding>(R.layout.video_chat_in_call_fragment) {
 
+    override val viewModel: VideoChatRoomViewModel by viewModels()
+
+    private val userViewModel: UserViewModel by viewModels()
+
     @Inject
     lateinit var fSource: FirestoreSource
-
-    @Inject
-    override lateinit var viewModel: VideoChatRoomViewModel
-
-    @Inject
-    lateinit var userViewModel: UserViewModel
 
     @Inject
     lateinit var appConfigViewModel: AppConfigViewModel

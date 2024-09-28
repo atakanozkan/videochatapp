@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import com.videochat.R
 import com.videochat.architecture.ui.view.BaseFragment
 import com.videochat.databinding.VideoChatStartCallFragmentBinding
@@ -22,9 +23,7 @@ import javax.inject.Inject
 class VideoChatStartCallFragment : BaseFragment<UiState,VideoChatStartCallFragmentBinding>(
     layoutResourceId = R.layout.video_chat_start_call_fragment
 ) {
-
-    @Inject
-    override lateinit var viewModel:  UserViewModel
+    override val viewModel:  UserViewModel by viewModels()
 
     @Inject
     override lateinit var destinationToUiMapper: RouteDestinationToUiMapper

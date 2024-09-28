@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.videochat.R
 import com.videochat.architecture.ui.view.BaseFragment
 import com.videochat.databinding.VideoChatRegisterFragmentBinding
@@ -15,16 +16,13 @@ import com.videochat.ui.event.FragmentEventListener
 import com.videochat.ui.holder.VideoChatRegisterViewHolder
 import com.videochat.ui.navigation.RouteDestinationToUiMapper
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class VideoChatRegisterFragment : BaseFragment<UiState,VideoChatRegisterFragmentBinding>(
     layoutResourceId = R.layout.video_chat_register_fragment
 ) {
-    @Inject
-    override lateinit var viewModel: VideoChatRegisterViewModel
+    override val viewModel: VideoChatRegisterViewModel by viewModels()
 
-    @Inject
     override lateinit var destinationToUiMapper: RouteDestinationToUiMapper
 
     private lateinit var viewHolder: VideoChatRegisterViewHolder
